@@ -6,6 +6,7 @@ const withAuth = require('../../utils/auth');
 router.get('/', (req, res) => {
   console.log('======================');
   Post.findAll({
+    
     attributes: ['id',
      'post_url',
       'title',
@@ -73,6 +74,7 @@ router.get('/:id', (req, res) => {
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
+      
     });
 });
 
@@ -87,6 +89,7 @@ router.post('/', withAuth, (req, res) => {
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
+      
     });
 });
 
@@ -97,6 +100,8 @@ router.put('/upvote', withAuth, (req, res) => {
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
+      
+      
     });
 });
 
@@ -121,6 +126,8 @@ router.put('/:id', withAuth, (req, res) => {
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
+      
+      
     });
 });
 

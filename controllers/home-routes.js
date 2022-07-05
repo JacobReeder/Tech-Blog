@@ -27,22 +27,26 @@ router.get('/', (req, res) => {
       }
     ]
   })
-    .then(dbPostData => {
-      const posts = dbPostData.map(post => post.get({ plain: true }));
+   .then(dbPostData => {
+     const posts = dbPostData.map(post => post.get({ plain: true }));
 
       res.render('homepage', {
-        posts,
+       posts,
         loggedIn: req.session.loggedIn
       });
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json(err);
+     res.status(500).json(err);
+     console.log('home-routes get post.findall');
+      
+  
     });
 });
 
+
 // get single post
-router.get('/post/:id', (req, res) => {
+router.get('/post/:id', (req, res) => { ///doesnt work
   Post.findOne({
     where: {
       id: req.params.id
@@ -53,7 +57,7 @@ router.get('/post/:id', (req, res) => {
       'post_url',
       'title',
       'created_at'
-      [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+     [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
     ],
     include: [
       {
@@ -70,31 +74,34 @@ router.get('/post/:id', (req, res) => {
       }
     ]
   })
-    .then(dbPostData => {
-      if (!dbPostData) {
-        res.status(404).json({ message: 'No post found with this id' });
-        return;
-      }
+   .then(dbPostData => {
+     if (!dbPostData) {
+       res.status(404).json({ message: 'No post found with this id' });
+       return;
+     }
 
-      const post = dbPostData.get({ plain: true });
+     const post = dbPostData.get({ plain: true });
 
-      res.render('single-post', {
-        post,
-        loggedIn: req.session.loggedIn
+     res.json('single-post', {
+     post,
+       loggedIn: req.session.loggedIn
       });
-    })
+     })
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
+      console.log('home-routes get post findone');
+      
     });
 });
 
 router.get('/login', (req, res) => {
-  if (req.session.loggedIn) { // if already logged in. Add logout first before uncommenting
+  if (req.session.loggedIn) {
     res.redirect('/');
     return;
   }
   res.render('login');
 });
+
 
 module.exports = router;

@@ -35,7 +35,13 @@ router.get('/:id', (req, res) => {
             model: Post,
             attributes: ['title']
           }
+        },
+        { model: Post,
+            attributes: ['title'],
+            through: Vote,
+            as: 'voted_posts'
         }
+    
       ]
     })
       .then(dbUserData => {
@@ -47,7 +53,7 @@ router.get('/:id', (req, res) => {
       })
       .catch(err => {
         console.log(err);
-        res.status(500).json(err);
+        res.status(404).json(err);
       });
   });
 
@@ -102,7 +108,7 @@ router.post('/', (req, res) => {
       });
     });
   });
-  
+
   router.post('/logout', (req, res) => {
     if (req.session.loggedIn) {
       req.session.destroy(() => {
@@ -114,27 +120,28 @@ router.post('/', (req, res) => {
     }
   });
 
-  
-// PUT /api/users/1
+  // PUT /api/users/1
 router.put('/:id', (req, res) => {
  
-    User.update(req.body, {
-      where: {
-        id: req.params.id
+  User.update(req.body, {
+    individualHooks: true,
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(dbUserData => {
+      if (!dbUserData[0]) {
+        res.status(404).json({ message: 'No user found with this id' });
+        return;
       }
+      res.json(dbUserData);
     })
-      .then(dbUserData => {
-        if (!dbUserData[0]) {
-          res.status(404).json({ message: 'No user found with this id' });
-          return;
-        }
-        res.json(dbUserData);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).json(err);
-      });
-  });
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+  
 
 // DELETE /api/users/1
 router.delete('/:id', (req, res) => {
@@ -155,5 +162,7 @@ router.delete('/:id', (req, res) => {
         res.status(500).json(err);
       });
   });
+
+
 
 module.exports = router;
