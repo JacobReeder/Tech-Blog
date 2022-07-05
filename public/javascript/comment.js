@@ -23,6 +23,8 @@ async function commentFormHandler(event) {
       } else {
         alert(response.statusText);
       }
+    } else {
+      alert("Please enter a comment!")
     }
   }
   
